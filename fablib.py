@@ -13,7 +13,6 @@ import os
 import re
 import time
 
-__version__ = "0.1.0"
 
 def chown(dirs, user=None, group=None):
     """User sudo to set user and group ownership"""
@@ -50,8 +49,10 @@ def hasrole(role):
     return (fullhost in roledef) or (env.host in roledef)
 
 
-def pickrole(role_list):
+def pickrole(role_list=None):
     """Return first of specified roles that is defined for current host"""
+    if role_list is None:
+        role_list = env.roledefs.keys()
     for role in role_list:
         if hasrole(role):
             return role

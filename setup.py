@@ -1,11 +1,14 @@
 """Fabric deployment helper functions"""
+# pylint: disable=W0402
 
-from distutils.core import setup
-from fablib import __version__
+try:
+    from setuptools import setup
+except:
+    from distutils.core import setup
 
 setup(
     name="fablib",
-    version=__version__,
+    version="0.1.0",
     description=__doc__,
     author="Graham Poulter",
     author_email="graham@mocality.com",
