@@ -131,6 +131,20 @@ def diff(local_path, remote_path):
         return local_content.strip() != remote_content.getvalue().strip()
 
 
+def install_deb(pkgname, url):
+    """Install package from custom deb hosted on S3.
+    Return true if package was installed by this invocation."""
+    status = run("dpkg-query -W -f='${Status}' %s ; true" % pkgname)
+    if ('installed' not in status) or ('not-installed' in status):
+        deb = url.rpartition('/')[2]
+        debtmp = join('/tmp', deb)
+        run("wget --no-check-certificate -qc -O '{}' '{}'".format(debtmp, url))
+        sudo("dpkg -i '{0}' && rm -f '{0}'".format(debtmp))
+        return True
+    else:
+        return False
+
+
 def make_version(ref=None):
     """Build git version string for current directory"""
     cmd = 'git describe --tags --abbrev=5 {}'.format(ref or '')
