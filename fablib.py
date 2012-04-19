@@ -37,7 +37,8 @@ def cron(name, timespec, user, command, environ=None):
         envstr = '\n'.join('{}={}'.format(k, v)
                            for k, v in environ.iteritems())
         entry = '{}\n{}'.format(envstr, entry)
-    put(StringIO(entry), path, use_sudo=True, mode=0o644)
+    chput(StringIO(entry), path, use_sudo=True,
+          mode=0o644, user='root', group='root')
 
 
 def hasrole(role):
