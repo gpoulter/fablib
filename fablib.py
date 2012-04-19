@@ -42,11 +42,10 @@ def cron(name, timespec, user, command, environ=None):
 
 def hasrole(role):
     """True if current host has the specified role"""
-    fullhost = '{}@{}'.format(env.user, env.host).lower()
     roledef = env.roledefs[role]
     roledef = roledef() if callable(roledef) else roledef
     roledef = [s.strip().lower() for s in roledef]
-    return (fullhost in roledef) or (env.host in roledef)
+    return (env.host_string in roledef) or (env.host in roledef)
 
 
 def pickrole(role_list=None, strict=False):
