@@ -61,6 +61,7 @@ def pickrole(role_list=None, strict=False):
     if results:
         return results[0]
 
+
 ### ROLES HELPERS }}}
 ### {{{ FILE AND DIRECTORY HELPERS
 
@@ -152,19 +153,15 @@ def rsync(local_path, remote_path, exclude=None):
     if not local_path.endswith('/'):
         local_path += '/'
     exclude = exclude or []
-    exclude.extend(['*.egg-info', '*.pyc', '/build/', '/dist/'])
+    exclude.extend(['*.egg-info', '*.pyc', '.git', '.gitignore',
+                    '.gitmodules', '/build/', '/dist/'])
     with hide('running'):
         run("mkdir -p '{}'".format(remote_path))
         return rsync_project(
             remote_path, local_path, delete=True,
-            extra_opts='-i --omit-dir-times -FF --quiet',
+            extra_opts='-i --omit-dir-times -FF',
             ssh_opts='-o StrictHostKeyChecking=no',
             exclude=exclude)
-
-
-def rsync_module(module, exclude=None):
-    """Rsync a dir from modules directory to remote code directory"""
-    rsync(join('modules', module), join(env.code, module), exclude)
 
 
 @contextmanager
