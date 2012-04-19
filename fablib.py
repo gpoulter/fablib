@@ -2,8 +2,8 @@
 
 from cuisine import (
     package_update_apt, package_upgrade_apt, package_install_apt)
-from fabric.api import (env, get, hide, hosts, lcd, local, put, roles, run,
-                        runs_once, settings, sudo)
+from fabric.api import (abort, env, get, hide, hosts, lcd, local, put, roles,
+                        run, runs_once, settings, sudo)
 from fabric.contrib.files import exists
 from fabric.contrib.project import rsync_project
 from os.path import dirname, join
@@ -49,7 +49,7 @@ def hasrole(role):
     return (fullhost in roledef) or (env.host in roledef)
 
 
-def pickrole(role_list=None):
+def pickrole(role_list=None, strict=False):
     """Return first of specified roles that is defined for current host"""
     if role_list is None:
         role_list = env.roledefs.keys()
@@ -57,7 +57,8 @@ def pickrole(role_list=None):
         if hasrole(role):
             return role
     else:
-        return None
+        if strict:
+            abort("No role found for host: {}".format(env.host))
 
 
 def mkdir(dirs, user=None, group=None, mode=None, use_sudo=True):
