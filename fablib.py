@@ -50,7 +50,10 @@ def hostroles(restrict=None):
 def pickrole(role_list=None, strict=False):
     """Return first of role_list (or env.roles) valid for current host.
     strict=True aborts if no roles or multiple roles are valid."""
-    role_list = role_list or env.roles
+    if role_list:
+        role_list = [r for r in role_list if r in env.roles]
+    else:
+        role_list = env.roles
     results = [role for role in role_list if hasrole(role)]
     if strict:
         if len(results) == 0:
