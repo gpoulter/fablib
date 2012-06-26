@@ -290,7 +290,8 @@ def write_version(path, ref=None):
     """Update version file using git desribe"""
     with lcd(dirname(path)):
         version = make_version(ref)
-    if env.get('full') or version != open(path).read().strip():
+    if (env.get('full') or not os.path.exists(path)
+        or version != open(path).read().strip()):
         with open(path, 'w') as out:
             out.write(version)
 
