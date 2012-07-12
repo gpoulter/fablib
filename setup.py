@@ -11,6 +11,8 @@ except ImportError:
     from distutils.core import setup
 
 ROOT = os.path.dirname(inspect.getfile(inspect.currentframe()))
+with open(os.path.join(ROOT, 'README')) as readme:
+    long_description = readme.read()
 
 classifiers = """
 Development Status :: 3 - Alpha
@@ -26,15 +28,15 @@ Programming Language :: Python :: 2.7
 
 classifiers = [c.strip() for c in classifiers.split('\n') if c.strip()]
 
-try:
-    from setuptools import setup
-except:
-    from distutils.core import setup
-
 setup(
     name="fablib",
     author="Graham Poulter",
+    author_email="graham.poulter@gmail.com",
+    classifiers=classifiers,
     description=__doc__,
+    license='MIT',
+    long_description=long_description,
     py_modules=['fablib'],
+    url='http://github.com/gpoulter/fablib',
     version="0.1.0",
 )
