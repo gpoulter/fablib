@@ -1,5 +1,30 @@
+#!/usr/bin/python
 """Fabric deployment helper functions"""
-# pylint: disable=W0402
+# pylint: disable=W0402,W0801
+
+import inspect
+import os
+import sys
+try:
+    from setuptools import setup
+except ImportError:
+    from distutils.core import setup
+
+ROOT = os.path.dirname(inspect.getfile(inspect.currentframe()))
+
+classifiers = """
+Development Status :: 3 - Alpha
+Intended Audience :: Developers
+License :: OSI Approved :: MIT License
+Topic :: Software Development :: Build Tools
+Topic :: System :: Installation/Setup
+Operating System :: OS Independent
+Programming Language :: Python
+Programming Language :: Python :: 2
+Programming Language :: Python :: 2.7
+"""
+
+classifiers = [c.strip() for c in classifiers.split('\n') if c.strip()]
 
 try:
     from setuptools import setup
@@ -8,9 +33,8 @@ except:
 
 setup(
     name="fablib",
-    version="0.1.0",
-    description=__doc__,
     author="Graham Poulter",
-    author_email="graham@mocality.com",
+    description=__doc__,
     py_modules=['fablib'],
+    version="0.1.0",
 )
