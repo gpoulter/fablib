@@ -247,7 +247,7 @@ def update_apt(days=None, upgrade=False):
 
 def make_version(ref=None):
     """Build git version string for current directory"""
-    cmd = 'git describe --tags --abbrev=5 {}'.format(ref or '')
+    cmd = 'git describe --tags --abbrev=6 {}'.format(ref or '')
     with hide('commands'):
         version = local(cmd, capture=True).strip()
     if re.match('^v[0-9]', version):
@@ -293,7 +293,7 @@ def write_version(path, ref=None):
     if (env.get('full') or not os.path.exists(path)
         or version != open(path).read().strip()):
         with open(path, 'w') as out:
-            out.write(version)
+            out.write(version + '\n')
 
 ### VERSION TAGGING HELPERS }}}
 ### {{{ SPLUNK HELPERS
