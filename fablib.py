@@ -169,7 +169,7 @@ def rsync(local_path, remote_path, exclude=None):
 
 @contextmanager
 def tempput(local_path=None, remote_path=None, use_sudo=False,
-           mirror_local_mode=False, mode=None):
+            mirror_local_mode=False, mode=None):
     """Put a file to remote and remove it afterwards"""
     import warnings
     warnings.simplefilter('ignore', RuntimeWarning)
@@ -235,7 +235,7 @@ def update_apt(days=None, upgrade=False):
     """Update apt index if not update in last N days"""
     days = (3 if env.get('full') else 14) if days is None else days
     with hide('commands'):
-        lastupdate = int(run('stat /var/cache/apt -c %Y'))
+        lastupdate = int(run('stat /var/lib/apt/lists/partial -c %Y'))
     if (time.time() - lastupdate) > days * 86400:
         package_update_apt()
         if upgrade:
@@ -291,7 +291,7 @@ def write_version(path, ref=None):
     with lcd(dirname(path)):
         version = make_version(ref)
     if (env.get('full') or not os.path.exists(path)
-        or version != open(path).read().strip()):
+            or version != open(path).read().strip()):
         with open(path, 'w') as out:
             out.write(version + '\n')
 
@@ -301,7 +301,7 @@ def write_version(path, ref=None):
 
 def splunk(cmd, user='admin', passwd='changeme'):
     """Authenticated call to splunk"""
-    return sudo('/opt/splunkforwarder/bin/splunk {} -auth {}:{}'\
+    return sudo('/opt/splunkforwarder/bin/splunk {} -auth {}:{}'
                 .format(cmd, user, passwd))
 
 
