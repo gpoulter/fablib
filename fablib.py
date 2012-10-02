@@ -65,9 +65,12 @@ def chput(local_path=None, remote_path=None, user=None, group=None,
         return None
 
 
-def cron(name, timespec, user, command, environ=None):
+def cron(name, timespec, user, command, environ=None, disable=False):
     """Create entry in /etc/cron.d"""
     path = '/etc/cron.d/{}'.format(name)
+    if disable:
+        sudo('rm ' + path)
+        return
     entry = '{}\t{}\t{}\n'.format(timespec, user, command)
     if environ:
         envstr = '\n'.join('{}={}'.format(k, v)
