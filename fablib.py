@@ -32,39 +32,6 @@ def default_roles(*role_list):
     return selectively_attach
 
 
-def hasrole(role):
-    """True if current host has the specified role"""
-    roledef = [s.strip().lower() for s in env.roledefs[role]]
-    return (env.host_string in roledef) or (env.host in roledef)
-
-
-def hostroles(restrict=None):
-    """Iterate over role that are in both env.roles and the
-    restrict list (if provided) that are valid for env.host."""
-    for role in env.roles:
-        if not restrict or role in restrict:
-            if hasrole(role):
-                yield role
-
-
-def pickrole(role_list=None, strict=False):
-    """Return first of role_list (or env.roles) valid for current host.
-    strict=True aborts if no roles or multiple roles are valid."""
-    if role_list:
-        role_list = [r for r in role_list if r in env.roles]
-    else:
-        role_list = env.roles
-    results = [role for role in role_list if hasrole(role)]
-    if strict:
-        if len(results) == 0:
-            abort("No role found for host: {}".format(env.host))
-        elif len(results) > 1:
-            abort("Multiple roles ({}) found for host: {}".format(
-                results, env.host))
-    if results:
-        return results[0]
-
-
 ### ROLES HELPERS }}}
 ### {{{ FILE AND DIRECTORY HELPERS
 
