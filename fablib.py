@@ -264,6 +264,7 @@ def write_version(path, ref=None):
             or version != open(path).read().strip()):
         with open(path, 'w') as out:
             out.write(version + '\n')
+    return version
 
 ### VERSION TAGGING HELPERS }}}
 ### {{{ SPLUNK HELPERS
