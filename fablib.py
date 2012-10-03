@@ -122,7 +122,7 @@ def mkdir(dirs, user=None, group=None, mode=None, use_sudo=True):
         return None
 
 
-def rsync(local_path, remote_path, exclude=None):
+def rsync(local_path, remote_path, exclude=None, extra_opts=None):
     """Helper to rsync submodules across"""
     if not local_path.endswith('/'):
         local_path += '/'
@@ -133,7 +133,7 @@ def rsync(local_path, remote_path, exclude=None):
         run("mkdir -p '{}'".format(remote_path))
         return rsync_project(
             remote_path, local_path, delete=True,
-            extra_opts='-i --omit-dir-times -FF',
+            extra_opts='-i --omit-dir-times -FF ' + extra_opts,
             ssh_opts='-o StrictHostKeyChecking=no',
             exclude=exclude)
 
@@ -231,7 +231,7 @@ def make_version(ref=None):
     return version
 
 
-def rsync_git(local_path, remote_path, exclude=None,
+def rsync_git(local_path, remote_path, exclude=None, extra_opts=None,
               version_file='version.txt'):
     """Rsync deploy a git repo.  Write and compare version.txt"""
     with settings(hide('output', 'running'), warn_only=True):
@@ -239,7 +239,7 @@ def rsync_git(local_path, remote_path, exclude=None,
               remote_path, version_file)).strip())
     print('Now Deploying Version ' +
           write_version(join(local_path, version_file)))
-    rsync(local_path, remote_path, exclude)
+    rsync(local_path, remote_path, exclude, extra_opts)
 
 
 def tagversion(repo, level='patch', special=''):
