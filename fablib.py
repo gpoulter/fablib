@@ -1,4 +1,5 @@
 """Utility functions for fabric tasks"""
+from __future__ import print_function
 
 from cuisine import (
     package_update_apt, package_upgrade_apt, package_install_apt)
@@ -230,15 +231,32 @@ def make_version(ref=None):
     return version
 
 
-def tagversion(repo, level='patch', special=''):
-    """(repo,level=patch,special='') Levels are major,minor,patch
+def rsync_git(local_path, remote_path, exclude=None,
+              version_file='version.txt'):
+    """Rsync deploy a git repo.  Write and compare version.txt"""
+    with settings(hide('output', 'running'), warn_only=True):
+        print('Version On Server: ' + run('cat ' + join(
+              remote_path, version_file)).strip())
+    print('Now Deploying Version ' +
+          write_version(join(local_path, version_file)))
+    rsync(local_path, remote_path, exclude)
 
-    Places new value in /version, commits change, and tags v{version}
-    semver.org versioning: {major}.{minor}.{patch}{special}
-    Special must start with a-z and consist of _a-zA-Z0-9."""
+
+def tagversion(repo, level='patch', special=''):
+    """Increment and return tagged version in git.
+    Increment levels are patch, minor and major.
+
+    Using semver.org versioning: {major}.{minor}.{patch}{special}
+    Special must start with a-z and consist of _a-zA-Z0-9.
+    """
+    prepend = 'v'
     with lcd(repo):
         oldversion = local(
-            'git describe --abbrev=0 --tags', capture=True).strip()[1:]
+            'git describe --abbrev=0 --tags', capture=True).strip()
+        if oldversion.startswith('v'):
+            oldversion = oldversion[1:]
+        else:
+            prepend = ''
     major, minor, patch = [int(x) for x in re.split('\D', oldversion, 3)[:3]]
     if special:
         if not re.match('^[a-z]', special):
@@ -253,7 +271,8 @@ def tagversion(repo, level='patch', special=''):
         major, minor, patch = major, minor, patch + 1
     version_string = '{}.{}.{}'.format(major, minor, patch) + special
     with lcd(repo):
-        local('git tag -s --force v{}'.format(version_string))
+        local('git tag -s --force {}{}'.format(prepend, version_string))
+    return version_string
 
 
 def write_version(path, ref=None):
