@@ -3,10 +3,11 @@ from __future__ import print_function
 
 from cuisine import (
     package_update_apt, package_upgrade_apt, package_install_apt)
-from fabric.api import (abort, env, get, hide, hosts, lcd, local, put, roles,
+from fabric.api import (env, get, hide, hosts, lcd, local, put, roles,
                         run, runs_once, settings, sudo)
 from StringIO import StringIO
 from contextlib import contextmanager
+from fabric.colors import green
 from fabric.contrib.files import exists
 from fabric.contrib.project import rsync_project
 from os.path import dirname, join
@@ -133,7 +134,8 @@ def rsync(local_path, remote_path, exclude=None, extra_opts=None):
         run("mkdir -p '{}'".format(remote_path))
         return rsync_project(
             remote_path, local_path, delete=True,
-            extra_opts='-i --omit-dir-times -FF ' + extra_opts,
+            extra_opts='-i --omit-dir-times -FF ' +
+                       (extra_opts if extra_opts else ''),
             ssh_opts='-o StrictHostKeyChecking=no',
             exclude=exclude)
 
@@ -235,10 +237,10 @@ def rsync_git(local_path, remote_path, exclude=None, extra_opts=None,
               version_file='version.txt'):
     """Rsync deploy a git repo.  Write and compare version.txt"""
     with settings(hide('output', 'running'), warn_only=True):
-        print('Version On Server: ' + run('cat ' + join(
-              remote_path, version_file)).strip())
-    print('Now Deploying Version ' +
-          write_version(join(local_path, version_file)))
+        print(green('Version On Server: ' + run('cat ' + join(
+              remote_path, version_file)).strip()))
+    print(green('Now Deploying Version ' +
+          write_version(join(local_path, version_file))))
     rsync(local_path, remote_path, exclude, extra_opts)
 
 
