@@ -208,8 +208,10 @@ def update_apt(days=None, upgrade=False):
     """Update apt index if not update in last N days"""
     days = (3 if env.get('full') else 14) if days is None else days
     with hide('commands'):
-        lastupdate = int(run('stat /var/lib/apt/lists/partial -c %Y'))
-    if (time.time() - lastupdate) > days * 86400:
+        # Ubuntu only: check the apt-get update timestamp
+        last_update = float(run(
+            "stat -c %Y /var/lib/apt/periodic/update-success-stamp"))
+    if (time.time() - last_update) > days * 86400:
         package_update_apt()
         if upgrade:
             package_upgrade_apt()
