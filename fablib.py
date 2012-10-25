@@ -1,8 +1,6 @@
 """Utility functions for fabric tasks"""
 from __future__ import print_function
 
-from cuisine import (
-    package_update_apt, package_upgrade_apt, package_install_apt)
 from fabric.api import (env, get, hide, hosts, lcd, local, put, roles,
                         run, runs_once, settings, sudo)
 from StringIO import StringIO
@@ -189,32 +187,28 @@ def install_deb(pkgname, url):
         return False
 
 
-def package_ensure_apt(package, update=False):
+def package_ensure_apt(*packages):
     """Ensure apt packages are installed"""
-    if not isinstance(package, basestring):
-        package = " ".join(package)
-    status = run("dpkg-query -W -f='${Status} ' %s ; true" % package)
+    package = " ".join(packages)
+    status = run("dpkg-query -W -f='${Status} ' {p} ; true".format(p=package))
     if 'No packages found' in status or 'not-installed' in status:
-        package_install_apt(package)
+        sudo("apt-get --yes install " + " ".join(package))
         return False
     else:
-        if update:
-            package_update_apt(package)
         return True
 
 
 @runs_once
-def update_apt(days=None, upgrade=False):
+def update_apt(days=14, upgrade=False):
     """Update apt index if not update in last N days"""
-    days = (3 if env.get('full') else 14) if days is None else days
+    # Check the apt-get update timestamp (works on Ubuntu only)
     with hide('commands'):
-        # Ubuntu only: check the apt-get update timestamp
         last_update = float(run(
             "stat -c %Y /var/lib/apt/periodic/update-success-stamp"))
     if (time.time() - last_update) > days * 86400:
-        package_update_apt()
+        sudo("apt-get --yes update")
         if upgrade:
-            package_upgrade_apt()
+            sudo("apt-get --yes upgrade")
 
 ### DEBIAN/UBUNTU HELPERS }}}
 ### {{{ VERSION TAGGING HELPERS
