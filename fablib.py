@@ -182,7 +182,7 @@ def debconf_set_selections(package, selections):
 def install_deb(pkgname, url):
     """Install package from custom deb hosted on S3.
     Return true if package was installed by this invocation."""
-    status = run("dpkg-query -W -f='${Status}' %s ; true" % pkgname)
+    status = run("dpkg-query -W -f='${{Status}}' {p}; true".format(p=pkgname))
     if ('installed' not in status) or ('not-installed' in status):
         deb = url.rpartition('/')[2]
         debtmp = join('/tmp', deb)
@@ -196,9 +196,9 @@ def install_deb(pkgname, url):
 def package_ensure_apt(*packages):
     """Ensure apt packages are installed"""
     package = " ".join(packages)
-    status = run("dpkg-query -W -f='${Status} ' {p} ; true".format(p=package))
+    status = run("dpkg-query -W -f='${{Status}} ' {p}; true".format(p=package))
     if 'No packages found' in status or 'not-installed' in status:
-        sudo("apt-get --yes install " + " ".join(package))
+        sudo("apt-get --yes install " + package)
         return False
     else:
         return True
