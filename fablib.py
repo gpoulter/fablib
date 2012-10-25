@@ -186,7 +186,7 @@ def install_deb(pkgname, url):
     status = run("dpkg-query -W -f='${{Status}}' {p}; true".format(p=pkgname))
     if ('installed' not in status) or ('not-installed' in status):
         deb = url.rpartition('/')[2]
-        debtmp = join('/tmp', deb)
+        debtmp = '/tmp/{}'.format(deb)
         run("wget --no-check-certificate -qc -O '{}' '{}'".format(debtmp, url))
         sudo("dpkg -i '{0}' && rm -f '{0}'".format(debtmp))
         return True
@@ -241,7 +241,7 @@ def rsync_git(local_path, remote_path, exclude=None, extra_opts=None,
               version_file='version.txt'):
     """Rsync deploy a git repo.  Write and compare version.txt"""
     with settings(hide('output', 'running'), warn_only=True):
-        print(green('Version On Server: ' + run('cat ' + join(
+        print(green('Version On Server: ' + run('cat ' + '{}/{}'.format(
               remote_path, version_file)).strip()))
     print(green('Now Deploying Version ' +
           write_version(join(local_path, version_file))))
