@@ -96,6 +96,12 @@ def diff(local_path, remote_path):
         return local_content.strip() != remote_content.getvalue().strip()
 
 
+def file_exists(location):
+    """Tests if there is a remote file at the given location."""
+    return run('test -e "{}" && echo OK ; true'
+               .format(location)).endswith("OK")
+
+
 def md5sum(filename, use_sudo=False):
     """Return md5sum of remote file"""
     runner = sudo if use_sudo else run
