@@ -205,13 +205,14 @@ def package_ensure_apt(*packages):
 
 
 @runs_once
-def update_apt(days=14, upgrade=False):
+def update_apt(days=3, upgrade=False):
     """Update apt index if not update in last N days"""
     # Check the apt-get update timestamp (works on Ubuntu only)
-    with hide('commands'):
-        last_update = float(run(
-            "stat -c %Y /var/lib/apt/periodic/update-success-stamp"))
-    if (time.time() - last_update) > days * 86400:
+    with settings(warn_only=True):
+        last_update = run(
+            "stat -c %Y /var/lib/apt/periodic/update-success-stamp")
+    if ('cannot stat' in last_update
+            or (time.time() - float(last_update)) > days * 86400):
         sudo("apt-get --yes update")
         if upgrade:
             sudo("apt-get --yes upgrade")
