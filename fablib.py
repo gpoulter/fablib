@@ -296,8 +296,8 @@ def write_version(path, ref=None):
 
 def splunk(cmd, user='admin', passwd='changeme'):
     """Authenticated call to splunk"""
-    return sudo('/opt/splunkforwarder/bin/splunk {} -auth {}:{}'
-                .format(cmd, user, passwd))
+    return sudo('/opt/splunkforwarder/bin/splunk {c} -auth {u}:{p}'
+                .format(c=cmd, u=user, p=passwd))
 
 
 def splunk_monitor(monitors):
@@ -310,8 +310,9 @@ def splunk_monitor(monitors):
     for path, sourcetype in monitors:
         if path not in env['splunk_monitors']:
             with hide('everything'):
-                run("touch '{}'; true".format(path))
-            splunk("add monitor '{}' -sourcetype {}".format(path, sourcetype))
+                run("touch '{path}'; true".format(path=path))
+            splunk("add monitor '{path}' -sourcetype {st}".format(
+                path=path, st=sourcetype))
             env['splunk_monitors'] += '\n' + path
 
 # SPLUNK HELPERS }}}
