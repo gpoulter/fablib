@@ -1,17 +1,16 @@
 #!/usr/bin/python
 """Fabric deployment helper functions"""
-# pylint: disable=W0402,W0801
+# pylint: disable=C0103,W0402
 
 import inspect
 import os
-import sys
 try:
     from setuptools import setup
 except ImportError:
     from distutils.core import setup
 
 ROOT = os.path.dirname(inspect.getfile(inspect.currentframe()))
-with open(os.path.join(ROOT, 'README')) as readme:
+with open(os.path.join(ROOT, 'README.rst')) as readme:
     long_description = readme.read()
 
 classifiers = """
