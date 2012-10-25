@@ -84,7 +84,8 @@ def diff(local_path, remote_path):
     """Return true if local and remote paths differ in contents"""
     with hide('commands'):
         if isinstance(local_path, basestring):
-            local_content = local("cat '{}'".format(local_path), capture=True)
+            with open(local_path) as stream:
+                local_content = stream.read()
         else:
             pos = local_path.tell()
             local_content = local_path.read()
