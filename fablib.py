@@ -55,14 +55,13 @@ def chput(local_path=None, remote_path=None, user=None, group=None,
           mode=None, use_sudo=True, mirror_local_mode=False, check=True):
     """Put file and set user and group ownership.  Default to use sudo."""
     # pylint: disable=R0913
+    result = None
     if env.get('full') or not check or diff(local_path, remote_path):
         result = put(local_path, remote_path, use_sudo,
                      mirror_local_mode, mode)
-        with hide('commands'):
-            chown(remote_path, user, group)
-        return result
-    else:
-        return None
+    with hide('commands'):
+        chown(remote_path, user, group)
+    return result
 
 
 def cron(name, timespec, user, command, environ=None, disable=False):
@@ -114,8 +113,6 @@ def mkdir(dirs, user=None, group=None, mode=None, use_sudo=True):
     """Create directory with sudo and octal mode, then set ownership."""
     if isinstance(dirs, basestring):
         dirs = [dirs]
-    if not env.get('full'):
-        dirs = [d for d in dirs if not exists(d)]
     runner = sudo if use_sudo else run
     if dirs:
         modearg = '-m {:o}'.format(mode) if mode else ''
@@ -124,8 +121,6 @@ def mkdir(dirs, user=None, group=None, mode=None, use_sudo=True):
         with hide('commands'):
             chown(dirs, user, group)
         return result
-    else:
-        return None
 
 
 def rsync(local_path, remote_path, exclude=None, extra_opts=None):
