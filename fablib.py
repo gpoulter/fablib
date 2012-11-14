@@ -193,7 +193,8 @@ def package_ensure_apt(*packages):
     """Ensure apt packages are installed"""
     package = " ".join(packages)
     status = run("dpkg-query -W -f='${{Status}} ' {p}; true".format(p=package))
-    if 'No packages found' in status or 'not-installed' in status:
+    status = status.lower()
+    if 'no packages found' in status or 'not-installed' in status:
         sudo("apt-get --yes install " + package)
         return False
     else:
